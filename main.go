@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
@@ -42,6 +43,8 @@ func main() {
 			msg.Text = "Hi :)"
 		case "status":
 			msg.Text = "I'm ok."
+		case "id":
+			msg.Text = strconv.FormatInt(update.Message.Chat.ID, 10)
 		default:
 			msg.Text = "I don't know that command"
 		}
