@@ -18,18 +18,6 @@ func main() {
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
-	_, err = bot.SetWebhook(tgbotapi.NewWebhookWithCert("https://telegram-bot-4x6t3l4ctq-an.a.run.app", nil))
-	if err != nil {
-		log.Fatal(err)
-	}
-	info, err := bot.GetWebhookInfo()
-	if err != nil {
-		log.Fatal(err)
-	}
-	if info.LastErrorDate != 0 {
-		log.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
-	}
-
 	updates := bot.ListenForWebhook("/")
 	go http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 
@@ -38,8 +26,25 @@ func main() {
 			continue
 		}
 
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-		msg.ReplyToMessageID = update.Message.MessageID
+		if !update.Message.IsCommand() { // ignore any non-command Messages
+			continue
+		}
+
+		// Create a new MessageConfig. We don't have text yet,
+		// so we should leave it empty.
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
+
+		// Extract the command from the Message.
+		switch update.Message.Command() {
+		case "help":
+			msg.Text = "type /sayhi or /status."
+		case "sayhi":
+			msg.Text = "Hi :)"
+		case "status":
+			msg.Text = "I'm ok."
+		default:
+			msg.Text = "I don't know that command"
+		}
 
 		if _, err := bot.Send(msg); err != nil {
 			log.Panic(err)
