@@ -40,9 +40,6 @@ func initDBSetting() {
 	if host == "" {
 		log.Panic("DB_NAME is null")
 	}
-}
-
-func initDB() {
 
 	if err := getDBEngine(); err != nil {
 		log.Fatal(err)
@@ -50,23 +47,22 @@ func initDB() {
 	engine.CreateTables(TokenTbl{})
 }
 
-func getDBEngine() *xorm.Engine {
+func getDBEngine() error {
+	var err error
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbName)
 	//格式
-	engine, err := xorm.NewEngine("postgres", psqlInfo)
+	engine, err = xorm.NewEngine("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal(err)
-		return nil
+		return err
 	}
 	engine.ShowSQL() //菜鸟必备
 
 	err = engine.Ping()
 	if err != nil {
-		log.Fatal(err)
-		return nil
+		return err
 	}
-	log.Println("connect postgresql success")
-	return engine
+	fmt.Println("connect postgresql success")
+	return nil
 }
 
 //TokenTbl table name 为token_tbl

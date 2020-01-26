@@ -15,8 +15,6 @@ func init() {
 }
 
 func main() {
-	initDB()
-
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_APITOKEN"))
 	if err != nil {
 		log.Fatal(err)
