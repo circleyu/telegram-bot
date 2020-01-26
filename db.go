@@ -96,12 +96,9 @@ func InsertToken(token *TokenTbl) bool {
 }
 
 //DeleteToken 删除(根据名称删除)
-func DeleteToken(name string) bool {
-	token := TokenTbl{
-		Name: name,
-	}
+func DeleteToken(token *TokenTbl) bool {
 	engine := getDBEngine()
-	rows, err := engine.Delete(&token)
+	rows, err := engine.Delete(token)
 	if err != nil {
 		log.Println(err)
 		return false

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
@@ -45,12 +46,33 @@ func main() {
 		case "help":
 			msg.Text = "type /register or /unregister."
 		case "register":
-			msg.Text = strconv.FormatInt(update.Message.Chat.ID, 10)
+			cmd := strings.Split(update.Message.Text, " ")
+			if len(cmd) == 0 {
+				msg.Text = "I don't know that command"
+			} else if strings.Compare(cmd[0], "/register") != 0 {
+				msg.Text = "I don't know that command"
+			} else {
+				token := TokenTbl{
+					Name:  cmd[1],
+					Token: strconv.FormatInt(update.Message.Chat.ID, 10),
+				}
+				if InsertToken(&token) {
+					msg.Text = "register ok !!"
+				} else {
+					msg.Text = "register fail !!"
+				}
+			}
 		case "unregister":
-			msg.Text = strconv.FormatInt(update.Message.Chat.ID, 10)
+			token := TokenTbl{
+				Token: strconv.FormatInt(update.Message.Chat.ID, 10),
+			}
+			if DeleteToken(&token) {
+				msg.Text = "unregister ok !!"
+			} else {
+				msg.Text = "unregister fail !!"
+			}
 		default:
-			//msg.Text = "I don't know that command"
-			msg.Text = update.Message.Text
+			msg.Text = "I don't know that command"
 		}
 
 		if _, err := bot.Send(msg); err != nil {
