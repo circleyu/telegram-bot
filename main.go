@@ -4,11 +4,12 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
+
+var bot *tgbotapi.BotAPI
 
 func init() {
 	initDBSetting()
@@ -23,6 +24,8 @@ func main() {
 	bot.Debug = true
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
+
+	http.HandleFunc("/sns", snsHandler)
 
 	updates := bot.ListenForWebhook("/")
 	go http.ListenAndServe(":"+os.Getenv("PORT"), nil)
@@ -52,8 +55,8 @@ func main() {
 				msg.Text = "I don't know that command"
 			} else {
 				token := TokenTbl{
-					Name:  cmd[1],
-					Token: strconv.FormatInt(update.Message.Chat.ID, 10),
+					Name:   cmd[1],
+					ChatID: update.Message.Chat.ID,
 				}
 				if InsertToken(&token) {
 					msg.Text = "register ok !!"
@@ -63,7 +66,7 @@ func main() {
 			}
 		case "unregister":
 			token := TokenTbl{
-				Token: strconv.FormatInt(update.Message.Chat.ID, 10),
+				ChatID: update.Message.Chat.ID,
 			}
 			if DeleteToken(&token) {
 				msg.Text = "unregister ok !!"

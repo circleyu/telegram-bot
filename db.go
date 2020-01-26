@@ -61,15 +61,15 @@ func getDBEngine() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("connect postgresql success")
+	log.Println("connect postgresql success")
 	return nil
 }
 
 //TokenTbl table name 为token_tbl
 type TokenTbl struct {
-	Id    int64
-	Name  string
-	Token string
+	Id     int64
+	Name   string
+	ChatID int64
 }
 
 //SelectToken 条件查询
