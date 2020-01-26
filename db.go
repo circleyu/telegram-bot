@@ -16,6 +16,7 @@ var (
 	user     string
 	password string
 	dbName   string
+	engine   *xorm.Engine
 )
 
 func initDBSetting() {
@@ -39,6 +40,10 @@ func initDBSetting() {
 	if host == "" {
 		log.Panic("DB_NAME is null")
 	}
+	if err := getDBEngine(); err != nil {
+		log.Fatal(err)
+	}
+	engine.CreateTables(TokenTbl{})
 }
 
 func getDBEngine() *xorm.Engine {
@@ -70,7 +75,6 @@ type TokenTbl struct {
 //SelectToken 条件查询
 func SelectToken(name string) *TokenTbl {
 	var tokens []TokenTbl
-	engine := getDBEngine()
 	err := engine.Where("token_tbl.name=?", name).Find(&tokens)
 	if err != nil {
 		log.Println(err)
@@ -83,7 +87,6 @@ func SelectToken(name string) *TokenTbl {
 
 //InsertToken 添加
 func InsertToken(token *TokenTbl) bool {
-	engine := getDBEngine()
 	rows, err := engine.Insert(token)
 	if err != nil {
 		log.Println(err)
@@ -97,7 +100,6 @@ func InsertToken(token *TokenTbl) bool {
 
 //DeleteToken 删除(根据名称删除)
 func DeleteToken(token *TokenTbl) bool {
-	engine := getDBEngine()
 	rows, err := engine.Delete(token)
 	if err != nil {
 		log.Println(err)
