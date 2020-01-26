@@ -10,6 +10,8 @@ import (
 )
 
 func main() {
+	initConfig()
+
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_APITOKEN"))
 	if err != nil {
 		log.Fatal(err)
@@ -38,12 +40,10 @@ func main() {
 		// Extract the command from the Message.
 		switch update.Message.Command() {
 		case "help":
-			msg.Text = "type /sayhi or /status."
-		case "sayhi":
-			msg.Text = "Hi :)"
-		case "status":
-			msg.Text = "I'm ok."
-		case "id":
+			msg.Text = "type /register or /unregister."
+		case "register":
+			msg.Text = strconv.FormatInt(update.Message.Chat.ID, 10)
+		case "unregister":
 			msg.Text = strconv.FormatInt(update.Message.Chat.ID, 10)
 		default:
 			msg.Text = "I don't know that command"
