@@ -9,8 +9,11 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
+func init() {
+	initDBSetting()
+}
+
 func main() {
-	initConfig()
 
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_APITOKEN"))
 	if err != nil {
@@ -46,7 +49,8 @@ func main() {
 		case "unregister":
 			msg.Text = strconv.FormatInt(update.Message.Chat.ID, 10)
 		default:
-			msg.Text = "I don't know that command"
+			//msg.Text = "I don't know that command"
+			msg.Text = update.Message.Text
 		}
 
 		if _, err := bot.Send(msg); err != nil {

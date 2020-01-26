@@ -11,14 +11,14 @@ import (
 )
 
 var (
-	host     = "35.221.173.100"
-	port     = "5432"
-	user     = "postgres"
-	password = "shrimp17"
-	dbName   = "kua-mei-a"
+	host     string
+	port     string
+	user     string
+	password string
+	dbName   string
 )
 
-func initConfig() {
+func initDBSetting() {
 	host = os.Getenv("DB_HOST")
 	if host == "" {
 		log.Panic("DB_HOST is null")
