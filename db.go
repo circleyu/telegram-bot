@@ -40,6 +40,10 @@ func initDBSetting() {
 	if host == "" {
 		log.Panic("DB_NAME is null")
 	}
+}
+
+func initDB() {
+
 	if err := getDBEngine(); err != nil {
 		log.Fatal(err)
 	}
