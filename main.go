@@ -9,25 +9,42 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-var bot *tgbotapi.BotAPI
+// TelegramBot app
+type TelegramBot struct {
+	bot *tgbotapi.BotAPI
+}
+
+// NewTelegramBot function
+func NewTelegramBot(apiToken string) (*TelegramBot, error) {
+	bot, err := tgbotapi.NewBotAPI(apiToken)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	bot.Debug = true
+	if err != nil {
+		return nil, err
+	}
+	return &TelegramBot{
+		bot: bot,
+	}, nil
+}
 
 func init() {
 	initDBSetting()
 }
 
 func main() {
-	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_APITOKEN"))
+	app, err := NewTelegramBot(os.Getenv("TELEGRAM_APITOKEN"))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	bot.Debug = true
+	log.Printf("Authorized on account %s", app.bot.Self.UserName)
 
-	log.Printf("Authorized on account %s", bot.Self.UserName)
+	http.HandleFunc("/sns", app.snsHandler)
 
-	http.HandleFunc("/sns", snsHandler)
-
-	updates := bot.ListenForWebhook("/")
+	updates := app.bot.ListenForWebhook("/")
 	go http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 
 	for update := range updates {
@@ -77,7 +94,7 @@ func main() {
 			msg.Text = "I don't know that command"
 		}
 
-		if _, err := bot.Send(msg); err != nil {
+		if _, err := app.bot.Send(msg); err != nil {
 			log.Panic(err)
 		}
 	}

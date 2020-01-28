@@ -13,7 +13,7 @@ const subConfrmType = "SubscriptionConfirmation"
 const notificationType = "Notification"
 
 // snsHandler function for http server
-func snsHandler(w http.ResponseWriter, r *http.Request) {
+func (app *TelegramBot) snsHandler(w http.ResponseWriter, r *http.Request) {
 	chat := getValue("chat", r)
 	if chat == "" {
 		log.Printf("Unable to Parse url Query")
@@ -47,7 +47,7 @@ func snsHandler(w http.ResponseWriter, r *http.Request) {
 			message := m.(map[string]interface{})
 			log.Printf("Push message to %d: %s", token.ChatID, message["AlarmName"].(string))
 			msg := tgbotapi.NewMessage(token.ChatID, message["AlarmName"].(string))
-			if _, err := bot.Send(msg); err != nil {
+			if _, err := app.bot.Send(msg); err != nil {
 				log.Panic(err)
 			}
 		}
